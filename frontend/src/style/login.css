@@ -1,0 +1,369 @@
+
+/* ========================================
+   1. Global Reset
+======================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  color: #172033;
+  background: #f4f6fb;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* ========================================
+   2. Application Container
+======================================== */
+
+.app {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* ========================================
+   3. Full-Screen Login Background
+======================================== */
+
+.login-page {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 32px 20px;
+
+  background:
+    radial-gradient(
+      circle at 10% 12%,
+      rgba(99, 102, 241, 0.10),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 90% 88%,
+      rgba(59, 130, 246, 0.09),
+      transparent 30%
+    ),
+    #f4f6fb;
+}
+
+/* ========================================
+   4. Login Card
+======================================== */
+
+.login-card {
+  width: 100%;
+  max-width: 460px;
+  margin: auto;
+  padding: 42px 40px 38px;
+
+  background: #ffffff;
+  border: 1px solid #e6eaf2;
+  border-radius: 20px;
+
+  box-shadow:
+    0 24px 60px rgba(31, 41, 81, 0.08),
+    0 4px 12px rgba(31, 41, 81, 0.03);
+
+  transition: box-shadow 0.25s ease;
+}
+
+.login-card:hover {
+  box-shadow:
+    0 28px 70px rgba(31, 41, 81, 0.11),
+    0 4px 12px rgba(31, 41, 81, 0.03);
+}
+
+/* ========================================
+   5. EnterpriseIQ Heading
+======================================== */
+
+.login-card h1 {
+  margin: 0;
+  color: #111827;
+  text-align: center;
+
+  font-size: clamp(32px, 5vw, 39px);
+  font-weight: 750;
+  line-height: 1.25;
+  letter-spacing: -1.5px;
+}
+
+/* ========================================
+   6. Subtitle
+======================================== */
+
+.subtitle {
+  margin: 12px 0 34px;
+  color: #69758b;
+  text-align: center;
+
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.2px;
+}
+
+/* ========================================
+   7. Login Form
+======================================== */
+
+.login-card form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.form-group {
+  width: 100%;
+  margin-bottom: 22px;
+}
+
+/* Left-aligned labels */
+
+.form-group label {
+  display: block;
+  width: 100%;
+  margin-bottom: 9px;
+
+  color: #344054;
+  text-align: left;
+
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.1px;
+}
+
+/* ========================================
+   8. Email and Password Inputs
+======================================== */
+
+.form-group input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 49px;
+  margin: 0;
+  padding: 13px 14px;
+
+  color: #172033;
+  background: #ffffff;
+
+  border: 1px solid #d8deea;
+  border-radius: 9px;
+  outline: none;
+
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.form-group input::placeholder {
+  color: #9aa4b5;
+  opacity: 1;
+}
+
+.form-group input:hover {
+  border-color: #b5bfd1;
+}
+
+.form-group input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.10);
+}
+
+.form-group input:disabled {
+  background: #f8fafc;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   9. Login Button
+======================================== */
+
+.login-card button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 49px;
+  margin: 4px 0 0;
+  padding: 13px 18px;
+
+  color: #ffffff;
+  background: linear-gradient(135deg, #4f46e5, #3730a3);
+
+  border: 1px solid transparent;
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: 0.2px;
+
+  cursor: pointer;
+  box-shadow: 0 5px 12px rgba(79, 70, 229, 0.18);
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.login-card button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #4338ca, #312e81);
+  box-shadow: 0 8px 18px rgba(79, 70, 229, 0.25);
+  transform: translateY(-1px);
+}
+
+.login-card button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-card button:focus-visible {
+  outline: 3px solid rgba(99, 102, 241, 0.35);
+  outline-offset: 3px;
+}
+
+.login-card button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ========================================
+   10. Login Error and Success Messages
+======================================== */
+
+.login-error,
+.login-success {
+  margin: 0 0 18px;
+  padding: 12px;
+  border-radius: 8px;
+
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.login-error {
+  color: #b42318;
+  background: #fef3f2;
+  border: 1px solid #fecdca;
+}
+
+.login-success {
+  color: #067647;
+  background: #ecfdf3;
+  border: 1px solid #abefc6;
+}
+
+/* ========================================
+   11. Tablet Responsive Design
+======================================== */
+
+@media (max-width: 768px) {
+  .login-page {
+    padding: 28px 18px;
+  }
+
+  .login-card {
+    max-width: 440px;
+    padding: 36px 30px;
+  }
+}
+
+/* ========================================
+   12. Mobile Responsive Design
+======================================== */
+
+@media (max-width: 520px) {
+  .login-page {
+    padding: 20px 14px;
+  }
+
+  .login-card {
+    max-width: 420px;
+    padding: 32px 24px;
+    border-radius: 16px;
+  }
+
+  .login-card h1 {
+    font-size: 31px;
+    letter-spacing: -1px;
+  }
+
+  .subtitle {
+    margin-bottom: 28px;
+    font-size: 14px;
+  }
+
+  .form-group {
+    margin-bottom: 19px;
+  }
+}
+
+/* ========================================
+   13. Short Screens
+======================================== */
+
+@media (max-height: 600px) {
+  .login-page {
+    align-items: flex-start;
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+}
+
+/* ========================================
+   14. Accessibility
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
