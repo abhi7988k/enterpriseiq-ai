@@ -10,7 +10,7 @@ from app.rag_chain import create_rag_chain
 BASE_DIR = Path(__file__).resolve().parent.parent
 PDF_PATH = BASE_DIR / "Data" / "EnterpriseAiData.pdf"
 CHROMA_PATH = Path(
-    os.getenv("CHROMA_PATH", str(BASE_DIR / "chroma_db"))
+     os.getenv("CHROMA_PATH", "/tmp/chroma_db")
 )
 
 
