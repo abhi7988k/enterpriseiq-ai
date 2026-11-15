@@ -1,5 +1,5 @@
 
-const API_URL = "http://localhost:8080/api/ai/chat";
+const API_URL = import.meta.env.VITE_AI_API_URL;
 
 export async function sendMessage(prompt) {
   const token = localStorage.getItem("token");

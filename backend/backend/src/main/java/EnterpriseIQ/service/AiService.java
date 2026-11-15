@@ -10,6 +10,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class AiService {
@@ -19,6 +20,9 @@ public class AiService {
     public AiService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
+
+    @Value("${AI_SERVICE_URL:http://127.0.0.1:8000}")
+    private String aiServiceUrl;
 
     public AiResponseDto chat(AiRequestDto request) {
 
@@ -33,8 +37,8 @@ public class AiService {
 
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create(
-                            "http://127.0.0.1:8000/api/ai/chat"
-                    ))
+                          aiServiceUrl + "/api/ai/chat"
+                      ))
                     .version(HttpClient.Version.HTTP_1_1)
                     .header("Content-Type", "application/json")
                     .header("Accept", "application/json")

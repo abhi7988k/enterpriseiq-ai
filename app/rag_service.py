@@ -1,6 +1,5 @@
-
+import os
 from pathlib import Path
-
 from app.document_loader import load_pdf
 from app.text_splitter import split_document
 from app.vector_store import create_vectore_store, get_vector_store
@@ -10,7 +9,9 @@ from app.rag_chain import create_rag_chain
 # Project directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 PDF_PATH = BASE_DIR / "Data" / "EnterpriseAiData.pdf"
-CHROMA_PATH = BASE_DIR / "chroma_db"
+CHROMA_PATH = Path(
+    os.getenv("CHROMA_PATH", str(BASE_DIR / "chroma_db"))
+)
 
 
 # Load the existing vector store or create a new one
@@ -39,6 +40,7 @@ else:
 print("\n--- RAG Debug Information ---")
 print("PDF exists:", PDF_PATH.exists())
 print("PDF path:", PDF_PATH)
+print("Chroma path:", CHROMA_PATH)
 print("Chroma document count:", vector_store._collection.count())
 
 
