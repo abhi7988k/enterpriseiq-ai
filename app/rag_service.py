@@ -1,10 +1,16 @@
 
-import os
+ 
 from pathlib import Path
 
 from app.document_loader import load_pdf
 from app.text_splitter import split_document
-from app.vector_store import create_vectore_store, get_vector_store
+from app.vector_store import (
+    create_vectore_store,
+    get_vector_store,
+    CHROMA_PATH
+)
+
+CHROMA_PATH = Path(CHROMA_PATH)
 from app.rag_chain import create_rag_chain
 
 
@@ -14,10 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # PDF document location
 PDF_PATH = BASE_DIR / "Data" / "EnterpriseAiData.pdf"
 
-# Chroma database location
-CHROMA_PATH = Path(
-    os.getenv("CHROMA_PATH", "/tmp/chroma_db")
-)
+ 
 
 
 # Check whether the PDF exists
@@ -87,7 +90,7 @@ test_question = "main components of an enterprise AI system"
 
 test_docs = vector_store.similarity_search(
     test_question,
-    k=3
+    k=5
 )
 
 print("\n--- Retrieved Document Chunks ---")
@@ -106,7 +109,7 @@ else:
 
 # Configure retriever
 retriever = vector_store.as_retriever(
-    search_kwargs={"k": 3}
+    search_kwargs={"k": 5}
 )
 
 
@@ -115,9 +118,24 @@ rag_chain = create_rag_chain(retriever)
 
 
 # Generate AI response
-def generate_rag_response(question: str) -> str:
 
-    response = rag_chain.invoke(question)
+import time
+
+def generate_rag_response(
+    question: str,
+    chat_history: str = ""
+) -> str:
+
+    start_time = time.perf_counter()
+
+    response = rag_chain.invoke({
+        "question": question,
+        "chat_history": chat_history
+    })
+
+    total_time = time.perf_counter() - start_time
+
+    print(f"AI response generation time: {total_time:.2f} seconds")
 
     if isinstance(response, str):
         return response
@@ -126,3 +144,4 @@ def generate_rag_response(question: str) -> str:
         return response.content
 
     return str(response)
+
