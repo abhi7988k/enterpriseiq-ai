@@ -31,24 +31,22 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // Allow requests from the React frontend
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(
-                List.of(
-                        "http://localhost:5173",
-                        "https://enterpriseiq-ai.vercel.app"
-                )
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "https://enterpriseiq-ai.vercel.app"
+        ));
 
-        );
-
-        config.setAllowedMethods(
-                List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
-        );
+        config.setAllowedMethods(List.of(
+                "GET", "POST", "PUT", "DELETE", "OPTIONS"
+        ));
 
         config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
@@ -63,19 +61,15 @@ public class SecurityConfig {
             throws Exception {
 
         http
-                // Enable CORS
                 .cors(cors ->
                         cors.configurationSource(corsConfigurationSource())
                 )
-
                 .csrf(csrf -> csrf.disable())
-
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
                         )
                 )
-
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/health",
@@ -85,7 +79,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/test/admin").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-
                 .exceptionHandling(exception ->
                         exception.authenticationEntryPoint(
                                 (request, response, authException) ->
@@ -95,7 +88,6 @@ public class SecurityConfig {
                                         )
                         )
                 )
-
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class

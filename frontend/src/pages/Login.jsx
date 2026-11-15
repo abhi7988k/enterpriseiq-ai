@@ -3,7 +3,7 @@ import { useState } from "react";
 import { loginUser } from "../services/authService";
 import "../style/login.css";
 
-function Login({ onLogin }) {
+function Login({ onLogin, onRegister }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,10 +20,8 @@ function Login({ onLogin }) {
     try {
       const data = await loginUser(email.trim(), password);
 
-      // Store JWT token.
       localStorage.setItem("token", data.token);
 
-      // Store user details.
       localStorage.setItem(
         "user",
         JSON.stringify({
@@ -34,7 +32,6 @@ function Login({ onLogin }) {
         })
       );
 
-      // Notify App.jsx about successful login.
       onLogin(data);
 
       setSuccess(`Welcome, ${data.name}! Login successful.`);
@@ -106,6 +103,17 @@ function Login({ onLogin }) {
             {loading ? "Signing in..." : "Login"}
           </button>
         </form>
+
+        <p className="register-link">
+          Don't have an account?{" "}
+          <button
+            type="button"
+            onClick={onRegister}
+            disabled={loading}
+          >
+            Create an account
+          </button>
+        </p>
       </div>
     </div>
   );
