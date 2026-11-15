@@ -9,8 +9,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 CHROMA_PATH = os.getenv(
     "CHROMA_PATH",
-    str(BASE_DIR / "chroma_db")
+    "/tmp/chroma_db"
 )
+print("VECTOR STORE CHROMA PATH:", CHROMA_PATH)
 
 def create_vectore_store(chunks):
     path = Path(CHROMA_PATH)
