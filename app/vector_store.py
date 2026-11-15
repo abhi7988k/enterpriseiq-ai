@@ -15,11 +15,24 @@ CHROMA_PATH = os.getenv(
 )
 
 
- def create_vectore_store(chunks):
+def create_vectore_store(chunks):
+    path = Path(CHROMA_PATH)
+
+    print("CHROMA_PATH:", path)
+    print("Directory writable:", os.access(path.parent, os.W_OK))
+
+    path.mkdir(parents=True, exist_ok=True)
+
+    test_file = path / "write_test.txt"
+    test_file.write_text("Storage test successful")
+    test_file.unlink()
+
+    print("Chroma storage write test successful")
+
     vector_store = Chroma.from_documents(
         documents=chunks,
         embedding=embeddings,
-        persist_directory=CHROMA_PATH,
+        persist_directory=str(path),
         collection_name="enterpriseiq"
     )
 
