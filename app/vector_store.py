@@ -15,7 +15,7 @@ CHROMA_PATH = os.getenv(
 )
 
 
-def create_vectore_store(chunks):
+ def create_vectore_store(chunks):
     vector_store = Chroma.from_documents(
         documents=chunks,
         embedding=embeddings,
