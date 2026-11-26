@@ -6,14 +6,13 @@ from langchain_core.runnables import RunnableLambda
 from app.prompt import rag_prompt
 from app.llm_service import llm
 
-
 def format_doc(docs):
-    return "\n\n".join(doc.page_content for doc in docs)
-
+    return "\n\n".join(
+        doc.page_content[:2500] for doc in docs
+    )
 
 def create_rag_chain(retriever):
 
-    # Step 1: Retrieve relevant documents from Chroma
     def retrieve_context(inputs):
 
         start_time = perf_counter()
@@ -23,19 +22,28 @@ def create_rag_chain(retriever):
         retrieval_time = perf_counter() - start_time
 
         print(
-            f"Chroma retrieval time: {retrieval_time:.2f} seconds",
+            f"\nChroma retrieval time: {retrieval_time:.2f} seconds",
             flush=True
         )
 
-        print(f"Retrieved document chunks: {len(docs)}", flush=True)
+        print(f"Retrieved chunks: {len(docs)}", flush=True)
+
+        # Check what Chroma actually retrieved.
+        for i, doc in enumerate(docs, 1):
+            print(f"\n--- Retrieved Chunk {i} ---", flush=True)
+            print(doc.page_content[:1000], flush=True)
+            print("Metadata:", doc.metadata, flush=True)
+
+        context = format_doc(docs)
+
+        print(f"\nTotal context length: {len(context)} characters", flush=True)
 
         return {
-            "context": format_doc(docs),
+            "context": context,
             "question": inputs["question"],
             "chat_history": inputs.get("chat_history", "")
         }
 
-    # Step 2: Generate answer using Gemini
     def generate_answer(prompt_value):
 
         start_time = perf_counter()
@@ -45,17 +53,14 @@ def create_rag_chain(retriever):
         generation_time = perf_counter() - start_time
 
         print(
-            f"Gemini generation time: {generation_time:.2f} seconds",
+            f"Ollama generation time: {generation_time:.2f} seconds",
             flush=True
         )
 
         return response
 
-    # Step 3: Build RAG pipeline
-    chain = (
+    return (
         RunnableLambda(retrieve_context)
         | rag_prompt
         | RunnableLambda(generate_answer)
     )
-
-    return chain

@@ -3,10 +3,14 @@ const API_URL = import.meta.env.VITE_AI_API_URL;
 
 console.log("AI API URL:", API_URL);
 
-// Create one session ID for this browser conversation
 let sessionId = localStorage.getItem("chat_session_id");
 
 if (!sessionId) {
+  sessionId = crypto.randomUUID();
+  localStorage.setItem("chat_session_id", sessionId);
+}
+
+export function createNewSession() {
   sessionId = crypto.randomUUID();
   localStorage.setItem("chat_session_id", sessionId);
 }

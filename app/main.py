@@ -1,31 +1,22 @@
+import os
+import psutil
 
-import socket
+from collections import OrderedDict
 
-# Prefer IPv4 for Gemini API connections
-_original_getaddrinfo = socket.getaddrinfo
-
-def prefer_ipv4_for_gemini(host, port, family=0, *args, **kwargs):
-    if host == "generativelanguage.googleapis.com":
-        family = socket.AF_INET
-
-    return _original_getaddrinfo(
-        host, port, family, *args, **kwargs
-    )
-
-socket.getaddrinfo = prefer_ipv4_for_gemini
-
-
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.rag_service import generate_rag_response
 
+
 app = FastAPI(
-    title="Enterprise Ai Service",
-    version="1.0.0"
+    title="EnterpriseIQ AI Service",
+    version="2.0.0",
+    description="AI service for EnterpriseIQ"
 )
 
+# Allow requests from the frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -40,44 +31,82 @@ app.add_middleware(
 
 
 class ChatRequest(BaseModel):
-    prompt: str
-    session_id: str
+    prompt: str = Field(..., min_length=1)
+    session_id: str = Field(..., min_length=1)
 
 
-conversation_history = {}
+# Store recent conversations for each session
+MAX_HISTORY_PER_SESSION = 5
+MAX_SESSIONS = 100
+
+conversation_history = OrderedDict()
 
 
 @app.get("/api/ai/health")
 def health():
-    return {"status": "Ai Service is Running"}
+    return {
+        "status": "AI Service is Running",
+        "llm": "Ollama",
+        "model": os.getenv("OLLAMA_MODEL", "qwen2.5:3b")
+    }
+
+
+@app.get("/api/ai/memory")
+def memory_usage():
+    process = psutil.Process(os.getpid())
+    memory = process.memory_info()
+
+    return {
+        "ram_mb": round(memory.rss / (1024 * 1024), 2),
+        "vms_mb": round(memory.vms / (1024 * 1024), 2)
+    }
 
 
 @app.post("/api/ai/chat")
 def chat(request: ChatRequest):
     session_id = request.session_id
+
     history = conversation_history.get(session_id, [])
 
     chat_history = ""
 
+    # Add previous messages to the context
     for message in history:
         chat_history += (
             f"User: {message['question']}\n"
             f"Assistant: {message['answer']}\n"
         )
 
-    answer = generate_rag_response(
-        request.prompt,
-        chat_history
-    )
+    try:
+        answer = generate_rag_response(
+            request.prompt,
+            chat_history
+        )
 
-    history.append({
-        "question": request.prompt,
-        "answer": answer
-    })
+        history.append({
+            "question": request.prompt,
+            "answer": answer
+        })
 
-    conversation_history[session_id] = history
+        # Keep only the latest five conversations
+        history = history[-MAX_HISTORY_PER_SESSION:]
 
-    return {
-        "answer": answer,
-        "session_id": session_id
-    }
+        conversation_history[session_id] = history
+        conversation_history.move_to_end(session_id)
+
+        # Remove older sessions when the limit is reached
+        while len(conversation_history) > MAX_SESSIONS:
+            conversation_history.popitem(last=False)
+
+        return {
+            "answer": answer,
+            "session_id": session_id
+        }
+
+    except Exception as e:
+        print(f"Chat error: {str(e)}", flush=True)
+
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to generate AI response."
+        )

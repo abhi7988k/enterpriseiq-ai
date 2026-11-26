@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { sendMessage } from "../services/aiService";
+import { sendMessage, createNewSession } from "../services/aiService";
 import "../style/chatbot.css";
 
 function Chatbot({ user, onLogout }) {
@@ -24,7 +24,6 @@ function Chatbot({ user, onLogout }) {
       return;
     }
 
-    // Display the user's message immediately.
     setMessages((previous) => [
       ...previous,
       {
@@ -37,10 +36,8 @@ function Chatbot({ user, onLogout }) {
     setLoading(true);
 
     try {
-      // Call Spring Boot, which forwards the request to FastAPI.
       const data = await sendMessage(question);
 
-      // Display the actual AI response.
       setMessages((previous) => [
         ...previous,
         {
@@ -69,6 +66,8 @@ function Chatbot({ user, onLogout }) {
   function handleNewChat() {
     if (loading) return;
 
+    createNewSession();
+
     setMessages([
       {
         role: "assistant",
@@ -81,7 +80,6 @@ function Chatbot({ user, onLogout }) {
 
   return (
     <div className="chat-layout">
-      {/* Sidebar */}
       <aside className="chat-sidebar">
         <div className="brand">
           <div className="brand-icon">E</div>
@@ -136,7 +134,6 @@ function Chatbot({ user, onLogout }) {
         </div>
       </aside>
 
-      {/* Main chat area */}
       <main className="chat-main">
         <header className="chat-header">
           <div>
@@ -163,7 +160,6 @@ function Chatbot({ user, onLogout }) {
             </p>
           </div>
 
-          {/* Messages */}
           <div className="messages">
             {messages.map((message, index) => (
               <div
@@ -201,7 +197,6 @@ function Chatbot({ user, onLogout }) {
             )}
           </div>
 
-          {/* Input area */}
           <div className="chat-bottom">
             <div className="suggestions">
               {[

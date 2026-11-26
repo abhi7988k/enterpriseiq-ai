@@ -21,3 +21,5 @@ target/
 # IDE
 .idea/
 .vscode/
+chroma_db_backup/
+app/test_ollama.py

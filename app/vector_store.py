@@ -9,41 +9,39 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 CHROMA_PATH = os.getenv(
     "CHROMA_PATH",
-    "/tmp/chroma_db"
+    str(BASE_DIR / "chroma_db")
 )
+
+COLLECTION_NAME = "enterpriseiq"
+
 print("VECTOR STORE CHROMA PATH:", CHROMA_PATH)
+
 
 def create_vectore_store(chunks):
     path = Path(CHROMA_PATH)
-
-    print("CHROMA_PATH:", path)
-    print("Directory writable:", os.access(path.parent, os.W_OK))
-
     path.mkdir(parents=True, exist_ok=True)
-
-    test_file = path / "write_test.txt"
-    test_file.write_text("Storage test successful")
-    test_file.unlink()
-
-    print("Chroma storage write test successful")
 
     vector_store = Chroma.from_documents(
         documents=chunks,
         embedding=embeddings,
         persist_directory=str(path),
-        collection_name="enterpriseiq"
+        collection_name=COLLECTION_NAME
     )
 
+    print("Chroma vector store created successfully.")
     return vector_store
 
+
 def get_vector_store():
-    vector_store = Chroma(
+    return Chroma(
         persist_directory=CHROMA_PATH,
-        collection_name="enterpriseiq",
+        collection_name=COLLECTION_NAME,
         embedding_function=embeddings
     )
 
-    return vector_store
 
 def search_documents(question, vector_store):
-    return vector_store.similarity_search(question, k=3)
+    return vector_store.similarity_search(
+        question,
+        k=3
+    )
